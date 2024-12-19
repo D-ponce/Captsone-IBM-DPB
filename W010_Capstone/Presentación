@@ -1,6 +1,8 @@
 import os
 from pptx import Presentation
 from pptx.util import Inches
+from PIL import Image
+from io import BytesIO
 
 # Crear la presentación
 presentation = Presentation()
@@ -47,4 +49,18 @@ add_slide_with_title(presentation, "Creatividad e Innovación", "La presentació
 output_path = "Capstone_Presentation_SpaceX.pptx"
 presentation.save(output_path)
 
-print(f"La presentación ha sido guardada como {output_path}. Puedes subir este archivo a tu repositorio de GitHub.")
+# Exportar las diapositivas como imágenes
+def save_slides_as_images(prs, output_folder):
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    for i, slide in enumerate(prs.slides):
+        img_path = os.path.join(output_folder, f"slide_{i+1}.png")
+        slide_img = slide.shapes._spTree.xml  # Obtiene la estructura XML de la diapositiva
+        with BytesIO() as output:
+            img = Image.open(BytesIO(slide_img))
+            img.save(img_path, "PNG")
+
+save_slides_as_images(presentation, "slides_preview")
+
+print(f"La presentación ha sido guardada como {output_path}. También se generaron imágenes en la carpeta 'slides_preview' para previsualización en GitHub.")
+
